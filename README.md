@@ -17,7 +17,7 @@ This script will setup your pi to use a vpn for all traffic ensuring your anonym
   1. Get your raspberry pi setup and running a stock image of debian wheezy.
   2. Download this script using wget.
 
-      `wget https://raw.githubusercontent.com/ssmereka/Torbox_rpi/master/start.sh`
+      `wget https://raw.githubusercontent.com/ssmereka/art/master/start.sh`
       
   3. Give the script permissions to run and run it.
 
