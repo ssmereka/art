@@ -189,7 +189,9 @@ function installOpenvpn {
   # Ensure openvpn is installed.  
   if [[ `which openvpn` == "" ]]; then
     printJob "Installing openvpn"
-    sudo apt-get install openvpn -y --force-yes
+    sudo apt-get update
+    sudo apt-get install upgrade -y --force-yes
+    sudo apt-get install openvpn openssl -y --force-yes
     printJobDone
   fi
 
