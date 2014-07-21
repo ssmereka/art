@@ -1,6 +1,10 @@
 #!/bin/bash
 
-# Raspberry TORte
+# Anonymous Raspberry Torte
+#
+# TORte, TOR-te, TORreTE, Torrent... huh? 
+# do... do you get it?
+#
 # This script will setup your pi to use a vpn 
 # for all traffic ensuring your anonymity.  
 # It will also monitor your IP address to 
@@ -11,47 +15,80 @@
 # Script Configuration
 # ----------------------------------------- #
 
-# Certain parts of the script are configurable
-# using the following variables.  You can 
-# edit these to quickly configure the script.
+# If you want, if you really really want,
+# if you really really wanta configure this
+# script... you can do so below.
+
+# Your IP address goes here.  Don't worry
+# the script will keep this updated for you,
+# but just to be safe.
+#
+# Recommendation... go to http://icanhazip.com
+# copy your IP address and paste it in here.
+# 
+ip=""
 
 # Private VPN username.  If you do not enter 
 # it here you will be prompted the first time
 # you start openvpn using this script.
+#
+# Recommendation... leave it blank
+#
 vpnUsername=""
 
 # Private VPN password.  If you do not enter 
 # it here you will be prompted the first time
 # you start openvpn using this script.
+#
+# Recommendation... leave it blank
+#
 vpnPassword=""
 
 # When true, additional logs will be printed.
+#
+# Recommendation... leave this as false.
+#
 debug=false
 
-# Your IP address
-ip=""
-
 # Directory where this script is stored.
+#
+# Recommendation... leave this alone.
+#
 scriptRootDirectory="/usr/bin/art"
 
 # Script log file location.
+#
+# Recommendation... leave this alone.
+#
 logFile=$scriptRootDirectory"/torbox.log"
 
 # Openvpn log file location.
+#
+# Recommendation... leave this alone.
+#
 openvpnLogFile=$scriptRootDirectory"/ovpn.log"
 
 # VPN credentials storage location.
+#
+# Recommendation... leave this alone.
+#
 authFile=$scriptRootDirectory"/auth.txt"
 
 
 # VPN Provider 
 # ----------------------------------------- #
+# There are tons of VPN providers out there 
+# and this script will automatically setup
+# openvpn for your provider, maybe.  You 
+# should indicate, from the immense list of
+# providers below, which one you would like 
+# to use.
 
-# List of possible VPN providers:
+# Immense list of possible VPN providers:
 torguard="TorGuard"
 
-# VPN Provider
-# All avilable options are listed above.
+# Selected VPN provider
+# Fill in the provider you would like to use.
 vpnProvider=$torguard
 
 
@@ -62,12 +99,22 @@ vpnProvider=$torguard
 
 
 
+
+
+# or whatever, what do I care.  Just don't
+# come crying to me about unexpected features
+# you introduced into the script because I 
+# already added tons of those for you!
+
+
 # ----------------------------------------- #
 # Global Variables
 # ----------------------------------------- #
 
 # Files
 # ----------------------------------------- #
+# Below are all file related variables, such 
+# as names, locations, etc.
 
 # Current directory this script is in.
 curScriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -87,6 +134,8 @@ vpnMonitorScript=$scriptRootDirectory"/"$vpnmonScriptName
 
 # Flags
 # ----------------------------------------- #
+# Below are boolean values used to track
+# functionality or turn it on/off.
 
 # Is the script output currently being logged to a file
 isLoggingEnabled=false
@@ -119,8 +168,6 @@ if [[ "$vpnProvider" == "$torguard" ]];
 else
   end "Invalid VPN provider selected."
 fi
-
-
 
 
 # ----------------------------------------- #
@@ -315,14 +362,11 @@ function end {
 # ----------------------------------------- #
 
 # Install and start ART.
-function installArt {
+function requireArt {
   if [ ! -d "$scriptRootDirectory" ]; then
 
     # Ensure git is installed.
-    gitLocation=`which git`
-    if [[ "$gitLocation" == "" ]]; then
-      sudo apt-get install git -y --force-yes
-    fi
+    installPackage "git"
 
     # Download ART scripts and files and setup permissions.
     git clone https://github.com/ssmereka/art.git $scriptRootDirectory
@@ -330,7 +374,7 @@ function installArt {
     sudo chmod +x $artScript
 
     # Remove this script and run start.
-    "."$artScript -z $curScriptDir"/"$artScriptName &
+    #"."$artScript -z $curScriptDir"/"$artScriptName &
     end
   fi
 }
@@ -602,6 +646,8 @@ function startVpnMonitor {
   # Require root permission for vpn monitor script.
   requireRootPermission
 
+  # 
+
   # Require openvpn to be installed and configured.
   requireOpenVpn
 
@@ -697,6 +743,9 @@ if [[ isHandled=false ]] || helpFlag; then
   printHelp
   end
 fi
+
+# Ensure ART is installed
+requireArt
 
 # Start logging to the log file.
 startLogging
