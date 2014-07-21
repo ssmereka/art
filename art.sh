@@ -19,6 +19,7 @@
 # if you really really wanta configure this
 # script... you can do so below.
 
+
 # Your IP address goes here.  Don't worry
 # the script will keep this updated for you,
 # but just to be safe.
@@ -26,52 +27,46 @@
 # Recommendation... go to http://icanhazip.com
 # copy your IP address and paste it in here.
 # 
+
 ip=""
+
 
 # Private VPN username.  If you do not enter 
 # it here you will be prompted the first time
 # you start openvpn using this script.
-#
-# Recommendation... leave it blank
-#
+
 vpnUsername=""
+
 
 # Private VPN password.  If you do not enter 
 # it here you will be prompted the first time
 # you start openvpn using this script.
-#
-# Recommendation... leave it blank
-#
+
 vpnPassword=""
 
+
 # When true, additional logs will be printed.
-#
-# Recommendation... leave this as false.
-#
+
 debug=false
 
+
 # Directory where this script is stored.
-#
-# Recommendation... leave this alone.
-#
+
 scriptRootDirectory="/usr/bin/art"
 
+
 # Script log file location.
-#
-# Recommendation... leave this alone.
-#
+
 logFile=$scriptRootDirectory"/art.log"
 
+
 # Openvpn log file location.
-#
-# Recommendation... leave this alone.
-#
+
 openvpnLogFile=$scriptRootDirectory"/ovpn.log"
 
+
 # VPN credentials storage location.
-#
-# Recommendation... leave this alone.
-#
+
 authFile=$scriptRootDirectory"/auth.txt"
 
 
@@ -84,11 +79,15 @@ authFile=$scriptRootDirectory"/auth.txt"
 # providers below, which one you would like 
 # to use.
 
+
 # Immense list of possible VPN providers:
+
 torguard="TorGuard"
+
 
 # Selected VPN provider
 # Fill in the provider you would like to use.
+
 vpnProvider=$torguard
 
 
@@ -398,9 +397,12 @@ function requireArt {
     chmod +x $vpnMonitorScript
     chmod +x $artScript
     cd $curDir
+ 
+    # Get VPN authentication
+    getVpnCredentials
 
     # Remove this script and run start.
-    sudo $artScript -z $curScriptDir"/"$artScriptName &
+    sudo $artScript -z $curScriptDir"/"$artScriptName $vpnUsername $vpnPassword &
     end
   fi
 }
@@ -687,8 +689,6 @@ function startVpnMonitor {
   # Require root permission for vpn monitor script.
   requireRootPermission
 
-  # 
-
   # Require openvpn to be installed and configured.
   requireOpenVpn
 
@@ -804,8 +804,13 @@ logScriptRun
 if $finishInstallFlag; then
   requireRootPermission
   sleep 3
+
   echo sudo rm $2
+  vpnUsername=$3
+  vpnPassword=$4
+
   startVpnMonitor
+  end
 fi
 
 # Update the script and its dependancies.
