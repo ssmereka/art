@@ -155,6 +155,12 @@ isPmUpdated=false
 # Name of the current task being performed.
 currentJob=""
 
+# User who invoked the script, even if they used sudo.
+user="$SUDO_USER"
+if [[ "$user" == "" ]]; then
+  user=`whoami`
+fi
+
 
 # VPN Provider
 # ----------------------------------------- #
@@ -333,9 +339,6 @@ function getUserInputHidden {
 }
 
 
-
-
-
 # ----------------------------------------- #
 # End Script Methods
 # ----------------------------------------- #
@@ -347,6 +350,7 @@ function end {
   # Clear any private information.
   vpnUsername=""
   vpnPassword=""
+  ip=""
 
   if [[ "$msg" != "" ]]; then
     echo "Error:  "$msg
@@ -377,10 +381,11 @@ function requireArt {
     sudo chmod +x $artScript
 
     # Remove this script and run start.
-    #"."$artScript -z $curScriptDir"/"$artScriptName &
+    sudo "."$artScript -z $curScriptDir"/"$artScriptName &
     end
   fi
 }
+
 
 # Update and start ART.
 function updateArt {
@@ -689,6 +694,7 @@ updateFlag=false
 listFlag=false
 tailFlag=false
 isHandled=false
+finishInstallFlag=false
 
 # Handle script flags.
 for var in "$@"
@@ -739,6 +745,11 @@ do
       isHandled=true
       updateFlag=true
       ;;
+
+    -z)
+      isHandled=true
+      finishInstallFlag=true
+      ;;
   esac
 done
 
@@ -753,6 +764,14 @@ requireArt
 
 # Start logging to the log file.
 startLogging
+
+# Finish install by removing install script and starting the vpn.
+if $finishInstallFlag; then
+  requireRootPermission
+  sleep 3
+  echo sudo rm $1
+  startVpnMonitor
+fi
 
 # Update the script and its dependancies.
 if $updateFlag; then
