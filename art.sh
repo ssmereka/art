@@ -162,7 +162,7 @@ currentJob=""
 # openvpn with a specific provider.
 
 # Openvpn configuration folder, stores all the configs.
-if [[ "$vpnProvider" == "$torguard" ]];
+if [[ "$vpnProvider" == "$torguard" ]]; then
   openvpnConfigFolder=$scriptRootDirectory"/TorGuardPRO"
   openVpnConfigFile=$openvpnConfigFolder"/TorGuard.Sweden.ovpn"
 else
@@ -365,6 +365,9 @@ function end {
 function requireArt {
   if [ ! -d "$scriptRootDirectory" ]; then
 
+    # Ensure we have root permission
+    requireRootPermission    
+
     # Ensure git is installed.
     installPackage "git"
 
@@ -460,7 +463,7 @@ function removePackage() {
 # Start logging output of script to the log file.
 # Creates a new log file if needed.
 function enableLogging {
-  if [ ! -f $logFile ];
+  if [ ! -f $logFile ]; then
     echo -e "----------------------------------------" > $logFile
     echo -e "Log Start" >> $logFile
     echo -e "----------------------------------------\n" >> $logFile
@@ -489,12 +492,12 @@ function deleteLogFile {
 
 # Print help menu.
 function printHelp {
-  echo -e "usage: \tbox.sh [options]\n"
+  echo -e "usage: \t art.sh [options] \n"
   
   echo -e "options:"
-  echo -e "  -k \t kill   \t Kill the vpn and monitoring service."  
+  echo -e "  -k \t kill   \t Stop the vpn and monitoring service."  
   #echo -e "  -l \t list   \t List the available vpns to connect to."
-  echo -e "  -s \t start  \t Start vpn and monitoring service."
+  echo -e "  -s \t start  \t Start the vpn and monitoring service."
   #echo -e "  -u \t update \t Update the current list of vpns."
 
   # Hidden flags.
@@ -567,8 +570,8 @@ function tailLogs {
 # Ensure the user is root before continuing.
 function requireRootPermission {
   if [[ $UID != 0 ]]; then
-    echo "Please run this script with sudo: "
-    echo "sudo $0 $*"
+    echo -e "\nPermission Denied:  Try again using sudo. \n"
+    echo -e "\t sudo $0 $* \n"
     end
   else
     isRoot=true
@@ -678,6 +681,7 @@ function stopVpnMonitor {
 # ----------------------------------------- #
 
 # Possible script flags.
+helpFlag=false
 killFlag=false
 printFlag=false
 startFlag=false
@@ -739,7 +743,7 @@ do
 done
 
 # If no options are specified, print the help menu.
-if [[ isHandled=false ]] || helpFlag; then
+if $helpFlag || ! $isHandled; then
   printHelp
   end
 fi
