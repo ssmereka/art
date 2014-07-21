@@ -60,7 +60,7 @@ scriptRootDirectory="/usr/bin/art"
 #
 # Recommendation... leave this alone.
 #
-logFile=$scriptRootDirectory"/torbox.log"
+logFile=$scriptRootDirectory"/art.log"
 
 # Openvpn log file location.
 #
@@ -169,7 +169,8 @@ fi
 
 # Openvpn configuration folder, stores all the configs.
 if [[ "$vpnProvider" == "$torguard" ]]; then
-  openvpnConfigFolder=$scriptRootDirectory"/TorGuardPRO"
+  openvpnConfigFolderName="TorGuardPRO"
+  openvpnConfigFolder=$scriptRootDirectory"/"$openvpnConfigFolderName
   openVpnConfigFile=$openvpnConfigFolder"/TorGuard.Sweden.ovpn"
 else
   end "Invalid VPN provider selected."
@@ -182,12 +183,12 @@ fi
 
 # Get the user's vpn credentials
 function getVpnCredentials {
-  if [[ "vpnUsername" == "" ]]; then
-    getUserInput $vpnUsername $vpnProvider" VPN username: "
+  if [[ "$vpnUsername" == "" ]]; then
+    getUserInput "vpnUsername" $vpnProvider" VPN username"
   fi
 
-  if [[ "vpnPassword" == "" ]]; then
-    getUserInputHidden $vpnPassword $vpnProvider" VPN password: "
+  if [[ "$vpnPassword" == "" ]]; then
+    getUserInputHidden "vpnPassword" $vpnProvider" VPN password"
   fi
 }
 
@@ -224,8 +225,7 @@ function requireAuthFile {
 
 # Get user input
 function getUserInput {
-  # Flag to indicate we turned off logging 
-  # to a file or not.
+  # Flag to indicate we turned off logging to a file or not.
   weDisableLogging=false
 
   # Ensure user can see the prompt.
@@ -252,7 +252,7 @@ function getUserInput {
   while [ $counter -gt 0 ]; do
     let COUNT=COUNT-1
     
-    echo -n $prompt
+    echo -n $prompt" "
     read input
 
     # If the input is valid, return it
@@ -287,10 +287,13 @@ function getUserInput {
 
 # Get user input, but hide the input.
 function getUserInputHidden {
+  # Flag to indicate we turned off logging to a file or not.
+  weDisableLogging=false
+
   # Ensure user can see the prompt.
   if $isLoggingEnabled; then
-    #TODO: Turn off logging.
-    end "Script logging is on, cannot prompt user."
+    disableLogging
+    weDisableLogging=true
   fi
 
   # Stores user input
@@ -311,7 +314,7 @@ function getUserInputHidden {
   while [ $counter -gt 0 ]; do
     let COUNT=COUNT-1
     
-    echo -n $prompt
+    echo -n $prompt" "
     stty_original=`stty -g`
     stty -echo
     read input
@@ -328,10 +331,20 @@ function getUserInputHidden {
         eval $1="'$input'"
       fi
 
+      # Turn back on logging if we turned it off.
+      if $weDisableLogging; then
+        enableLogging
+      fi
+
       # Return success.
       return 0
     fi
   done
+
+  # Turn back on logging if we turned it off.
+  if $weDisableLogging; then
+    enableLogging
+  fi
 
   # User input was not valid the max number of
   # times, so exit script with error.
@@ -377,12 +390,17 @@ function requireArt {
 
     # Download ART scripts and files and setup permissions.
     git clone https://github.com/ssmereka/art.git $scriptRootDirectory
+    
+    curDir=$(pwd)
+    cd $scriptRootDirectory
+    git fetch
     git checkout v0.0.2
-    sudo chmod +x $vpnMonitorScript
-    sudo chmod +x $artScript
+    chmod +x $vpnMonitorScript
+    chmod +x $artScript
+    cd $curDir
 
     # Remove this script and run start.
-    sudo "."$artScript -z $curScriptDir"/"$artScriptName &
+    sudo $artScript -z $curScriptDir"/"$artScriptName &
     end
   fi
 }
@@ -491,6 +509,20 @@ function deleteLogFile {
   fi
 }
 
+# Place a new marker in the log file to indicate
+# a new script command has been issued.
+function logScriptRun {
+  # Ensure logging is turned on.
+  if ! $isLoggingEnabled; then
+    enableLogging;
+  fi
+
+  echo -e "\n****************************************"
+  echo -e "ART Started with Command"
+  echo -e "****************************************\n"
+  echo -e "$0 $scriptArguments \n"
+  echo -e "****************************************\n"
+}
 
 # ----------------------------------------- #
 # Print Methods
@@ -599,25 +631,25 @@ function updateTorguardVpnConfigs {
   # Ensure there are credentials for openvpn configs.
   requireAuthFile
 
-  printJob "Updating "$provider" openvpn config files."
+  printJob "Updating "$vpnProvider" openvpn config files."
   
   if [ -f $openvpnConfigFolder".zip" ]; then
-    echo "Removing current "$provider" config zip archive."
+    echo "Removing current "$vpnProvider" config zip archive."
     sudo rm $openvpnConfigFolder".zip"
   fi
   
   if [ -f $openvpnConfigFolder ]; then
-    echo "Removing current "$provider" openvpn config files and folder."
+    echo "Removing current "$vpnProvider" openvpn config files and folder."
     sudo rm -rf $openvpnConfigFolder
   fi
 
-  echo "Downloading new "$provider" openvpn config files."
-  wget "https://torguard.net/downloads/"$openvpnConfigFolder".zip"
+  echo "Downloading new "$vpnProvider" openvpn config files."
+  wget "https://torguard.net/downloads/"$openvpnConfigFolderName".zip"
   unzip $openvpnConfigFolder".zip"
   
   echo "Adding authentication to openvpn config files."
   cd $openvpnConfigFolder
-  sed -i -e "s/auth-user-pass/auth-user-pass "$authFile"/" *.ovpn
+  sed -i -e "s,auth-user-pass,auth-user-pass "$authFile",g" *.ovpn
   cd $scriptRootDirectory
 
   printJobDone
@@ -661,7 +693,7 @@ function startVpnMonitor {
   requireOpenVpn
 
   printJob "Starting vpn monitor"
-  $vpnMonitorScript $openVpnConfigFile $ip $openvpnLogFile $debug &
+  echo $vpnMonitorScript $openVpnConfigFile $ip $openvpnLogFile $debug &
   printJobDone
 }
 
@@ -696,6 +728,8 @@ listFlag=false
 tailFlag=false
 isHandled=false
 finishInstallFlag=false
+
+scriptArguments="$@"
 
 # Handle script flags.
 for var in "$@"
@@ -763,20 +797,21 @@ fi
 # Ensure ART is installed
 requireArt
 
-# Start logging to the log file.
-startLogging
+# Start logging to file and log command used to run this script.
+logScriptRun
 
 # Finish install by removing install script and starting the vpn.
 if $finishInstallFlag; then
   requireRootPermission
   sleep 3
-  echo sudo rm $1
+  echo sudo rm $2
   startVpnMonitor
 fi
 
 # Update the script and its dependancies.
 if $updateFlag; then
   #update
+  echo "Update"
 fi
 
 # Start the vpn and vpn monitor.
