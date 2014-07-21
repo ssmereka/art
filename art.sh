@@ -377,6 +377,7 @@ function requireArt {
 
     # Download ART scripts and files and setup permissions.
     git clone https://github.com/ssmereka/art.git $scriptRootDirectory
+    git checkout v0.0.2
     sudo chmod +x $vpnMonitorScript
     sudo chmod +x $artScript
 
