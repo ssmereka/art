@@ -21,14 +21,10 @@ ART is preconfigured to work with the following vpn service providers:
   2. Download this script using wget.
 
       `wget https://raw.githubusercontent.com/ssmereka/art/master/art.sh`
-      
-      or something shorter
-      
-      `wget http://cli.gs/art.sh`
-      
+
   3. Give the script permissions to run and run it.
 
-      `sudo chmod +x art.sh && ./art.sh -s`
+      `sudo chmod +x art.sh && sudo ./art.sh -s`
       
 # Stop
 If you need to turn off the vpn and the vpn monitoring simply issue the kill command. \\
