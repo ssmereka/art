@@ -11,7 +11,7 @@ Turns a raspberry pi into a secure and anonymous torrent box with just one comma
 **Current Status:** In Development nearing Alpha
 
 # Compatible VPNs:
-ART will automatically configure openvpn to use the following popular vpn services:
+ART is preconfigured to work with the following vpn service providers:
 
   * [Torguard](https://torguard.net/)
 
