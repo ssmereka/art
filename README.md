@@ -6,7 +6,7 @@ Anonymous Raspberry TORte
 </p>
 
 
-Turns a raspberry pi into a secure and anonymous torrent box with just one command.  ART will setup your pi to use a vpn for all traffic ensuring your anonymity.  It will also monitor your IP address to ensure the vpn is working correctly.
+Turns a raspberry pi into a secure and anonymous torrent box with just one command.  ART will setup your pi to use a vpn for all traffic ensuring your anonymity.  It will also monitor your IP address to ensure the vpn is working correctly at all times.
 
 **Current Status:** In Development nearing Alpha
 
