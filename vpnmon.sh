@@ -95,5 +95,5 @@ function notifyFailure {
 while [ 1 ]
 do
   monitorOpenVpn
-  sleep 10
+  sleep 60
 done
