@@ -1,7 +1,7 @@
 Anonymous Raspberry TORte
 =========================
 
-Turns a raspberry pi into a secure and anonymous torrent box.
+Turns a raspberry pi into a secure and anonymous torrent box with just one command.
 
 <p align="center">
   <img src="http://i.imgur.com/pTzupF0.jpg?1" alt="Anonymous Raspberry TORte"/>
@@ -17,17 +17,15 @@ This script will setup your pi to use a vpn for all traffic ensuring your anonym
   1. Get your raspberry pi setup and running a stock image of debian wheezy.
   2. Download this script using wget.
 
-      `wget https://raw.githubusercontent.com/ssmereka/art/master/start.sh`
+      `wget https://raw.githubusercontent.com/ssmereka/art/master/art.sh`
       
   3. Give the script permissions to run and run it.
 
-      `sudo chmod +x start.sh && ./start.sh -s`
+      `sudo chmod +x art.sh && ./art.sh -s`
       
 # Stop
 If you need to turn off the vpn and the vpn monitoring simply issue the kill command. \\
-`sudo ./start -k`
-
-# Usage
+`sudo ./art -k`
 
 
 
