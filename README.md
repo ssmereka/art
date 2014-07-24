@@ -24,7 +24,7 @@ ART is preconfigured to work with the following vpn service providers:
       
       or something shorter
       
-      `wget http://goo.gl/IsaHE9`
+      `wget http://cli.gs/art.sh`
       
   3. Give the script permissions to run and run it.
 
