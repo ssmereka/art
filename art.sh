@@ -400,6 +400,7 @@ function requireArt {
     git checkout v0.0.2
     chmod +x $vpnMonitorScript
     chmod +x $artScript
+    chown -R $user:$user $scriptRootDirectory
     cd $curDir
 
     # Remove this script and run start.
@@ -817,13 +818,7 @@ if $finishInstallFlag; then
   requireRootPermission
   sleep 3
 
-  ls $scriptRootDirectory
-
-  sudo chown -R $user:$user $scriptRootDirectory
-  sudo chown root:root $authFile
-  sudo chmod 400 $authFile
-
-  echo sudo rm $2
+  sudo rm $2
   vpnUsername=$3
   vpnPassword=$4
 
