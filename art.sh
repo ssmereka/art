@@ -712,6 +712,9 @@ function startVpnMonitor {
 
 # Stop the vpn and the monitor.
 function stopVpnMonitor {
+  # Require root permission for vpn monitor script.
+  requireRootPermission
+
   # Kill the openvpn monitor  
   printJob "Killing openvpn monitor"
   killall $vpnmonScriptName
