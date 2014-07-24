@@ -649,11 +649,11 @@ function updateTorguardVpnConfigs {
   echo "Root: "$scriptRootDirectory
   echo "VPN Config: "$openvpnConfigFolder
   wget -P $scriptRootDirectory "https://torguard.net/downloads/"$openvpnConfigFolderName".zip"
-  unzip $openvpnConfigFolder".zip" -d $openvpnConfigFolder
-  
+  unzip $openvpnConfigFolder".zip" -d $scriptRootDirectory
   echo "Adding authentication to openvpn config files."
   cd $openvpnConfigFolder
-  sed -i -e "s,auth-user-pass,auth-user-pass "$authFile",g" *.ovpn
+  authByFile="auth-user-pass "$authFile 
+  sed -i -e "s,auth-user-pass,$authByFile,g" *.ovpn
   cd $scriptRootDirectory
 
   printJobDone
