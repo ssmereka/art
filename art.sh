@@ -363,6 +363,7 @@ function end {
   vpnUsername=""
   vpnPassword=""
   ip=""
+  scriptArguments=""
 
   if [[ "$msg" != "" ]]; then
     echo "Error:  "$msg
@@ -402,7 +403,12 @@ function requireArt {
     getVpnCredentials
 
     # Remove this script and run start.
-    sudo $artScript -z $curScriptDir"/"$artScriptName $vpnUsername $vpnPassword &
+    if $isRoot; then
+      sudo -u $user x-terminal-emulator -e "sudo $artScript -z $curScriptDir"/"$artScriptName $vpnUsername $vpnPassword"
+    else
+      x-terminal-emulator -e "sudo $artScript -z $curScriptDir"/"$artScriptName $vpnUsername $vpnPassword"
+    fi
+    #sudo $artScript -z $curScriptDir"/"$artScriptName $vpnUsername $vpnPassword &
     end
   fi
 }
@@ -522,7 +528,13 @@ function logScriptRun {
   echo -e "\n****************************************"
   echo -e "ART Started with Command"
   echo -e "****************************************\n"
-  echo -e "$0 $scriptArguments \n"
+  
+  if $finishInstallFlag; then
+    echo -e "$0 $1 $2 username password"
+  else
+    echo -e "$0 $scriptArguments \n"
+  fi
+
   echo -e "****************************************\n"
 }
 
@@ -646,8 +658,6 @@ function updateTorguardVpnConfigs {
   fi
 
   echo "Downloading new "$vpnProvider" openvpn config files."
-  echo "Root: "$scriptRootDirectory
-  echo "VPN Config: "$openvpnConfigFolder
   wget -P $scriptRootDirectory "https://torguard.net/downloads/"$openvpnConfigFolderName".zip"
   unzip $openvpnConfigFolder".zip" -d $scriptRootDirectory
   echo "Adding authentication to openvpn config files."
@@ -806,6 +816,10 @@ logScriptRun
 if $finishInstallFlag; then
   requireRootPermission
   sleep 3
+
+  sudo chown -R $user:$user $scriptRootDirectory
+  sudo chown root:root $authFile
+  sudo chmod 400 $authFile
 
   echo sudo rm $2
   vpnUsername=$3
