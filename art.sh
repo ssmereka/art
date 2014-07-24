@@ -385,6 +385,9 @@ function requireArt {
     # Ensure we have root permission
     requireRootPermission    
 
+    # Get VPN authentication
+    getVpnCredentials
+
     # Ensure git is installed.
     installPackage "git"
 
@@ -398,15 +401,12 @@ function requireArt {
     chmod +x $vpnMonitorScript
     chmod +x $artScript
     cd $curDir
- 
-    # Get VPN authentication
-    getVpnCredentials
 
     # Remove this script and run start.
     if $isRoot; then
-      sudo -u $user x-terminal-emulator -e "sudo $artScript -z $curScriptDir"/"$artScriptName $vpnUsername $vpnPassword"
+      sudo -u $user x-terminal-emulator -e "bash -c \" sudo $artScript -z $curScriptDir"/"$artScriptName $vpnUsername $vpnPassword ; exec bash\""
     else
-      x-terminal-emulator -e "sudo $artScript -z $curScriptDir"/"$artScriptName $vpnUsername $vpnPassword"
+      x-terminal-emulator -e "bash -c \" sudo $artScript -z $curScriptDir"/"$artScriptName $vpnUsername $vpnPassword ; exec bash\""
     fi
     #sudo $artScript -z $curScriptDir"/"$artScriptName $vpnUsername $vpnPassword &
     end
@@ -705,7 +705,7 @@ function startVpnMonitor {
   requireOpenVpn
 
   printJob "Starting vpn monitor"
-  echo $vpnMonitorScript $openVpnConfigFile $ip $openvpnLogFile $debug &
+  $vpnMonitorScript $openVpnConfigFile $ip $openvpnLogFile $debug &
   printJobDone
 }
 
@@ -816,6 +816,8 @@ logScriptRun
 if $finishInstallFlag; then
   requireRootPermission
   sleep 3
+
+  ls $scriptRootDirectory
 
   sudo chown -R $user:$user $scriptRootDirectory
   sudo chown root:root $authFile
