@@ -22,6 +22,10 @@ ART is preconfigured to work with the following vpn service providers:
 
       `wget https://raw.githubusercontent.com/ssmereka/art/master/art.sh`
       
+      or something shorter
+      
+      `wget http://goo.gl/IsaHE9`
+      
   3. Give the script permissions to run and run it.
 
       `sudo chmod +x art.sh && ./art.sh -s`
