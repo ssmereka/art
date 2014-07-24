@@ -27,7 +27,8 @@ ART is preconfigured to work with the following vpn service providers:
       `sudo chmod +x art.sh && sudo ./art.sh -s`
       
 # Stop
-If you need to turn off the vpn and the vpn monitoring simply issue the kill command. \\
+If you need to turn off the vpn and the vpn monitoring simply issue the kill command.
+
 `sudo ./art -k`
 
 
