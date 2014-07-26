@@ -1,21 +1,17 @@
 Anonymous Raspberry TORte
 =========================
 
-<p align="center">
-  <img src="http://i.imgur.com/pTzupF0.jpg?1" alt="Anonymous Raspberry TORte"/>
-</p>
+![Anonymous Raspberry TORte](http://i.imgur.com/un4L5FZ.png)  
 
 
-Turns a raspberry pi into a secure and anonymous torrent box with just one command.  ART will setup your pi to use a vpn for all traffic ensuring your anonymity.  It will also monitor your IP address to ensure the vpn is working correctly at all times.
+Turns a raspberry pi into a secure and anonymous torrent box with a single command.
 
 **Current Status:** In Development nearing Alpha
 
-# Compatible VPNs:
-ART is preconfigured to work with the following vpn service providers:
+# How?
+ART creates a VPN that encrypts all of your data.  Then ART ensures this VPN is always up and running, taking action if the vpn fails.  A VPN requires a VPN provider such as Torguard.  ART is preconfigured to work with the popular and secure providers.
 
-  * [Torguard](https://torguard.net/)
-
-# Setup
+# Ok, Lets do it!
 
   1. Get your raspberry pi setup and running a stock image of debian wheezy.
   2. Download this script using wget.
@@ -26,10 +22,20 @@ ART is preconfigured to work with the following vpn service providers:
 
       `sudo chmod +x art && sudo ./art -s`
       
-# Stop
+      
+# Usage
+Once installed, art can be used from anywhere by issuing the *art* command.
+
+![ART Usage](http://i.imgur.com/KCyLm6C.png?2) 
+
+## Stop
 If you need to turn off the vpn and the vpn monitoring simply issue the kill command.
 
-`sudo ./art -k`
+`sudo art -k`
 
+# Compatible VPNs:
+ART is preconfigured to work with the following vpn service providers:
+
+  * [Torguard](https://torguard.net/)
 
 
