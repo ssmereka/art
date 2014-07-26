@@ -399,7 +399,7 @@ function requireArt {
     getVpnCredentials
 
     oldLogFile="$logFile"
-    logFile="$scriptRootDirectory/$logFileName"
+    logFile="$curScriptDir/$logFileName"
     enableLogging
 
     # Ensure git is installed.
