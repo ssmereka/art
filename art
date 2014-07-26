@@ -421,7 +421,7 @@ function requireArt {
 
     addArtToPath
     
-    printJob "Finishing install and starting ART"
+    printJob "Cleaning up and starting ART"
     printJobDone
     disableLogging
     cp $logFile $oldLogFile
@@ -702,7 +702,7 @@ function updateTorguardVpnConfigs {
   # Ensure there are credentials for openvpn configs.
   requireAuthFile
 
-  printJob "Updating "$vpnProvider" openvpn config files."
+  printJob "Updating "$vpnProvider" configs."
   
   if [ -f $openvpnConfigFolder".zip" ]; then
     echo "Removing current "$vpnProvider" config zip archive."
@@ -761,7 +761,7 @@ function startVpnMonitor {
   # Require openvpn to be installed and configured.
   requireOpenVpn
 
-  printJob "Starting vpn monitor"
+  printJob "Starting art's openvpn monitor"
   $vpnMonitorScript $openVpnConfigFile $openvpnLogFile $debug $ip &
   printJobDone
 }
@@ -779,7 +779,7 @@ function stopVpnMonitor {
   # Kill the openvpn server.
   openvpnPid=`pgrep openvpn`
   if [[ "$openvpnPid" != "" ]]; then
-    printJob "Killing openvpn"
+    printJob "Killing openvpn process"
     sudo kill -9 `pgrep openvpn`
     printJobDone
   fi
