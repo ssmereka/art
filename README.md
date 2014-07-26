@@ -9,7 +9,7 @@ Turns a raspberry pi into a secure and anonymous torrent box with a single comma
 **Current Status:** In Development nearing Alpha
 
 # How?
-ART creates a VPN that encrypts all of your data.  Then ART ensures this VPN is always up and running, taking action if the vpn fails.  A VPN requires a VPN provider such as Torguard.  ART is preconfigured to work with the popular and secure providers.
+ART creates a VPN that encrypts all of your data.  Then ensures the VPN is always up and running, taking action if the it fails.  A VPN requires a provider such as [Torguard](https://torguard.net/).  ART is preconfigured to work with the popular and secure providers.
 
 # Ok, Lets do it!
 
