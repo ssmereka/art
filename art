@@ -54,9 +54,10 @@ debug=false
 
 scriptRootDirectory="/usr/src/art"
 
-# Script log file location.
+# Script log file name and location.
 
-logFile=$scriptRootDirectory"/art.log"
+logFileName="art.log"
+logFile=$scriptRootDirectory"/"$logFileName
 
 
 # Openvpn log file location.
@@ -397,6 +398,10 @@ function requireArt {
     # Get VPN authentication
     getVpnCredentials
 
+    oldLogFile="$logFile"
+    logFile="$scriptRootDirectory/$logFileName"
+    enableLogging
+
     # Ensure git is installed.
     installPackage "git"
 
@@ -413,6 +418,11 @@ function requireArt {
     cd $curDir
 
     addArtToPath
+    
+    disableLogging
+    cp $logFile $oldLogFile
+    chown $user:$user $oldLogFile
+    logFile="$oldLogFile"
 
     # Remove this script and run start.
     if $isRoot; then
@@ -548,7 +558,8 @@ function removePackage() {
 
 # Start logging output of script to the log file.
 # Creates a new log file if needed.
-function enableLogging {
+function enableLogging
+ {
   if [ ! -f $logFile ]; then
     echo -e "----------------------------------------" > $logFile
     echo -e "Log Start" >> $logFile
