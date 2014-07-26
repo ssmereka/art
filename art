@@ -406,7 +406,7 @@ function requireArt {
     installPackage "git"
 
     # Download ART scripts and files and setup permissions.
-    printJob "Downloading art files"
+    printJob "Downloading ART files"
     git clone https://github.com/ssmereka/art.git $scriptRootDirectory
 
     curDir=$(pwd)
@@ -761,7 +761,7 @@ function startVpnMonitor {
   # Require openvpn to be installed and configured.
   requireOpenVpn
 
-  printJob "Starting art's openvpn monitor"
+  printJob "Starting openvpn monitor"
   $vpnMonitorScript $openVpnConfigFile $openvpnLogFile $debug $ip &
   printJobDone
 }
