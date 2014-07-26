@@ -419,27 +419,22 @@ function requireArt {
     cd $curDir
     printJobDone
 
-    printJob "Adding art to the "$user"'s path"
     addArtToPath
-    printJobDone
     
-    printJob "Finishing the setup."
+    printJob "Finishing install and starting ART"
+    printJobDone
     disableLogging
     cp $logFile $oldLogFile
     rm $logFile
     chown $user:$user $oldLogFile
     logFile="$oldLogFile"
-    printJobDone
 
-    printJob "Starting ART"
-    printJobDone
     # Remove this script and run start.
     if $isRoot; then
       sudo -u $user x-terminal-emulator -e "bash -c \" sudo $artScript -z $curScriptDir"/"$artScriptName $vpnUsername $vpnPassword ; exec bash\""
     else
       x-terminal-emulator -e "bash -c \" sudo $artScript -z $curScriptDir"/"$artScriptName $vpnUsername $vpnPassword ; exec bash\""
     fi
-    #sudo $artScript -z $curScriptDir"/"$artScriptName $vpnUsername $vpnPassword &
     end
   fi
 }
@@ -448,22 +443,10 @@ function requireArt {
 function addArtToPath {
   printJob "Adding ART to user's path."
 
-  #echo "bash "$artScript" $*" > "/usr/bin/art"
   if [ ! -h "$userBinDirectory" ]; then
     echo "Adding symbolic link to $userBinDirectory"
     ln -s "$artScript" "$userBinDirectory"
   fi
-
-  # Add ART to the current path, if not already there.
-  #if [[ $PATH != *$scriptRootDirectory* ]]; then
-    #echo -e "Added ART to current path: \n$PATH\n"  
-    #PATH=$scriptRootDirectory:$PATH
-    #export PATH
-  #fi
-
-  # Add ART to user's path on login.
-  #addArtToFilePath $userHome"/.profile"
-  #addArtToFilePath $userHome"/.bashrc"
 
   printJobDone
 }
