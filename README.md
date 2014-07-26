@@ -20,11 +20,11 @@ ART is preconfigured to work with the following vpn service providers:
   1. Get your raspberry pi setup and running a stock image of debian wheezy.
   2. Download this script using wget.
 
-      `wget https://raw.githubusercontent.com/ssmereka/art/master/art.sh`
+      `wget https://raw.githubusercontent.com/ssmereka/art/master/art`
 
   3. Give the script permissions to run and run it.
 
-      `sudo chmod +x art.sh && sudo ./art.sh -s`
+      `sudo chmod +x art && sudo ./art -s`
       
 # Stop
 If you need to turn off the vpn and the vpn monitoring simply issue the kill command.
