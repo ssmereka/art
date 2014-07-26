@@ -431,11 +431,11 @@ function addArtToPath {
   ln -s "$artScript" "/usr/bin/art"
 
   # Add ART to the current path, if not already there.
-  if [[ $PATH != *$scriptRootDirectory* ]]; then
+  #if [[ $PATH != *$scriptRootDirectory* ]]; then
     #echo -e "Added ART to current path: \n$PATH\n"  
     #PATH=$scriptRootDirectory:$PATH
     #export PATH
-  fi
+  #fi
 
   # Add ART to user's path on login.
   #addArtToFilePath $userHome"/.profile"
