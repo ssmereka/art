@@ -119,7 +119,7 @@ vpnProvider=$torguard
 curScriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # File name of this script.
-artScriptName="art.sh"
+artScriptName="art"
 
 # Location of this script.
 artScript=$scriptRootDirectory"/"$artScriptName
@@ -158,6 +158,13 @@ currentJob=""
 user="$SUDO_USER"
 if [[ "$user" == "" ]]; then
   user=`whoami`
+fi
+
+# Get user's home directory
+if [[ "$SUDO_USER" != "" ]]; then
+  userHome=$(eval echo ~${SUDO_USER})
+else
+  userHome=$HOME
 fi
 
 
@@ -403,6 +410,8 @@ function requireArt {
     chown -R $user:$user $scriptRootDirectory
     cd $curDir
 
+    addArtToPath
+
     # Remove this script and run start.
     if $isRoot; then
       sudo -u $user x-terminal-emulator -e "bash -c \" sudo $artScript -z $curScriptDir"/"$artScriptName $vpnUsername $vpnPassword ; exec bash\""
@@ -414,6 +423,42 @@ function requireArt {
   fi
 }
 
+# Add ART to the user's path
+function addArtToPath {
+  printJob "Adding ART to user's path."
+
+  # Add ART to the current path, if not already there.
+  if [[ $PATH != *$scriptRootDirectory* ]]; then
+    echo -e "Added ART to current path: \n$PATH\n"  
+    PATH=$scriptRootDirectory:$PATH
+    export PATH
+  fi
+
+  # Add ART to user's path on login.
+  addArtToFilePath $userHome"/.profile"
+  addArtToFilePath $userHome"/.bashrc"
+
+  printJobDone
+}
+
+# Add ART path bash command to a specified file, if
+# the file does not already contain the command.
+function addArtToFilePath {
+  file=$1
+  str="if [ -d "\"$scriptRootDirectory\"" ]; then PATH=\""$scriptRootDirectory":\$PATH\"; fi"
+
+  if [ ! -f $file ]; then
+    echo "Creating $file and adding ART path."
+    echo "$str" > $file
+    chown $user:$user $file
+    chmod 644 $file
+  elif grep -q "$scriptRootDirectory" $file ; then
+    echo "ART path is already in $file"
+  else
+    echo "Add ART path to $file"
+    echo "$str" >> $file
+  fi
+}
 
 # Update and start ART.
 function updateArt {
@@ -545,7 +590,7 @@ function logScriptRun {
 
 # Print help menu.
 function printHelp {
-  echo -e "usage: \t art.sh [options] \n"
+  echo -e "usage: \t art [options] \n"
   
   echo -e "options:"
   echo -e "  -k \t kill   \t Stop the vpn and monitoring service."  
