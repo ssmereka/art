@@ -54,7 +54,6 @@ debug=false
 
 scriptRootDirectory="/usr/src/art"
 
-
 # Script log file location.
 
 logFile=$scriptRootDirectory"/art.log"
@@ -120,6 +119,9 @@ curScriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # File name of this script.
 artScriptName="art"
+
+# Symobolic link location to add art to the user's path.
+userBinDirectory="/usr/bin/"$artScriptName
 
 # Location of this script.
 artScript=$scriptRootDirectory"/"$artScriptName
@@ -427,15 +429,18 @@ function requireArt {
 function addArtToPath {
   printJob "Adding ART to user's path."
 
-  #echo "bash "$artScript" $*" > "/usr/bin/art" 
-  ln -s "$artScript" "/usr/bin/art"
+  #echo "bash "$artScript" $*" > "/usr/bin/art"
+  if [ ! -h "$userBinDirectory" ]; then
+    echo "Adding symbolic link to $userBinDirectory"
+    ln -s "$artScript" "$userBinDirectory"
+  fi
 
   # Add ART to the current path, if not already there.
-  if [[ $PATH != *$scriptRootDirectory* ]]; then
+  #if [[ $PATH != *$scriptRootDirectory* ]]; then
     #echo -e "Added ART to current path: \n$PATH\n"  
     #PATH=$scriptRootDirectory:$PATH
     #export PATH
-  fi
+  #fi
 
   # Add ART to user's path on login.
   #addArtToFilePath $userHome"/.profile"
