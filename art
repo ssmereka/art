@@ -406,8 +406,9 @@ function requireArt {
     installPackage "git"
 
     # Download ART scripts and files and setup permissions.
+    printJob "Downloading art files"
     git clone https://github.com/ssmereka/art.git $scriptRootDirectory
-    
+
     curDir=$(pwd)
     cd $scriptRootDirectory
     git fetch
@@ -416,14 +417,22 @@ function requireArt {
     chmod +x $artScript
     chown -R $user:$user $scriptRootDirectory
     cd $curDir
+    printJobDone
 
+    printJob "Adding art to the "$user"'s path"
     addArtToPath
+    printJobDone
     
+    printJob "Finishing the setup."
     disableLogging
     cp $logFile $oldLogFile
+    rm $logFile
     chown $user:$user $oldLogFile
     logFile="$oldLogFile"
+    printJobDone
 
+    printJob "Starting ART"
+    printJobDone
     # Remove this script and run start.
     if $isRoot; then
       sudo -u $user x-terminal-emulator -e "bash -c \" sudo $artScript -z $curScriptDir"/"$artScriptName $vpnUsername $vpnPassword ; exec bash\""
@@ -546,8 +555,7 @@ function removePackage() {
     requireRootPermission
 
     printJob "Uninstalling "$package
-    sudo apt-get --perge remove $package -y --force-yes
-    printJobDone
+    sudo apt-get --perge remove $package -y --forenableLoggingintJobDone
   fi
 }
 
@@ -687,6 +695,7 @@ function tailLogs {
 # Ensure the user is root before continuing.
 function requireRootPermission {
   if [[ $UID != 0 ]]; then
+    disableLogging
     echo -e "\nPermission Denied:  Try again using sudo. \n"
     echo -e "\t sudo $0 $* \n"
     end
