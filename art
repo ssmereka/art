@@ -171,6 +171,95 @@ else
 fi
 
 
+# ----------------------------------------- #
+# Deluge
+# ----------------------------------------- #
+
+delugeConfigFile="$userHome/.config/deluge/core.conf"
+delugeAuthFile="$userHome/.config/deluge/auth"
+
+# Install and setup deluge if it is not already installed.
+function requireDeluge {
+  requireRootPermission
+  
+  delugedLocation=`which deluged`
+
+  # TODO: Find a better way to see if deluged is installed.
+  if [[ "$delugedLocation" == "" ]]; then
+ 
+    installPackage "deluged"
+    installPackage "python-mako"
+    installPackage "deluge-web"
+    installPackage "deluge-console"
+
+    printJob "Generating Deluge config files."
+
+    # Start deluged process to generate config files.
+    deluged
+  
+    # Once the files have been generated, kill deluged process.
+    sleepCounter=0
+    if [ ! -f $delugeConfigFile ] && [ $sleepCounter -le 10 ]; then
+      sleep 1
+    fi
+    sleep 2
+    pid=`ps axf | grep deluged | grep -v grep | awk '{ print $1 }'`
+    sudo pkill deluged
+    wait $pid
+
+    # Make sure deluged is stopped.
+    pid=`ps axf | grep deluged | grep -v grep | awk '{ print $1 }'`
+    if [[ "$pid" != "" ]]; then
+      end "Could not stop deluged process to complete deluged install process."
+    fi
+
+    # Setup authentication
+    loadVpnCredentials
+    echo $vpnUsername":"$vpnPassword":10" >> $delugeAuthFile
+    vpnUsername=""
+    vpnPassword=""
+
+    printJobDone
+
+    # Enable remote access
+    # TODO: Handle allow_remote: false cases.
+    if ! grep -q allow_remote "$delugeConfigFile"; then
+      printJob "Enabling deluged remote access"
+      cp $delugeConfigFile $delugeConfigFile".old"
+      sed -e 's/}{/}{\n  "allow_remote": true,/1' $delugeConfigFile > $delugeConfigFile".tmp"
+      cat $delugeConfigFile".tmp" > $delugeConfigFile
+      rm $delugeConfigFile".tmp"
+      printJobDone
+    fi
+  fi
+  
+  startDeluged
+}
+
+# Start deluge deamon and web deamon if not already started.
+function startDeluged {
+  delugedPid=`ps axf | grep deluged | grep -v grep | awk '{ print $1 }'`
+  if [[ "$delugedPid" == "" ]]; then
+    printJob "Starting deluge deamon"
+    deluged
+    printJobDone
+  fi
+
+  webPid=`ps axf | grep deluge-web | grep -v grep | awk '{ print $1 }'`
+  if [[ "$webPid" == "" ]]; then
+    printJob "Starting deluge-web deamon"
+    nohup deluge-web &
+    printJobDone
+  fi
+}
+
+# Stop deluge deamon.
+function stopDeluged {
+  sudo pkill deluged
+  sudo pkill deluge-web 
+}
+
+
 # VPN Provider
 # ----------------------------------------- #
 # Global variables related to the use of 
@@ -198,6 +287,17 @@ function getVpnCredentials {
 
   if [[ "$vpnPassword" == "" ]]; then
     getUserInputHidden "vpnPassword" $vpnProvider" VPN password"
+  fi
+}
+
+# Read in user's vpn credentials from file.
+function loadVpnCredentials {
+  if [[ "$vpnUsername" == "" ]]; then
+    vpnUsername=`sudo head -1 $authFile`
+  fi
+
+  if [[ "$vpnPassword" == "" ]]; then
+    vpnPassword=`sudo head -2 $authFile | tail -n 1`
   fi
 }
 
@@ -880,7 +980,8 @@ if $finishInstallFlag; then
   sudo rm $2
   vpnUsername=$3
   vpnPassword=$4
-
+  
+  requireDeluge
   startVpnMonitor
   end
 fi
@@ -893,6 +994,7 @@ fi
 
 # Start the vpn and vpn monitor.
 if $startFlag; then
+  requireDeluge
   startVpnMonitor
 fi
 
