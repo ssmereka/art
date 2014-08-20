@@ -175,6 +175,7 @@ fi
 # Deluge
 # ----------------------------------------- #
 
+delugeConfigFolder="$userHome/.config/deluge"
 delugeConfigFile="$userHome/.config/deluge/core.conf"
 delugeAuthFile="$userHome/.config/deluge/auth"
 
@@ -195,17 +196,25 @@ function requireDeluge {
     printJob "Generating Deluge config files."
 
     # Start deluged process to generate config files.
-    deluged
+    sudo -u $user nohup deluged &
   
     # Once the files have been generated, kill deluged process.
     sleepCounter=0
-    if [ ! -f $delugeConfigFile ] && [ $sleepCounter -le 10 ]; then
-      sleep 1
-    fi
+    while [ ! -f $delugeConfigFile ] && [ $sleepCounter -le 100 ]; do
+      sleep 0.1
+      let sleepCounter=sleepCounter+1
+    done
     sleep 2
+
+    if [ ! -f $delugeConfigFile ]; then
+      end "Deluge configuration files could not be generated."
+    fi
+
     pid=`ps axf | grep deluged | grep -v grep | awk '{ print $1 }'`
     sudo pkill deluged
-    wait $pid
+    while [ -e /proc/$pid ]; do
+      sleep 0.1;
+    done
 
     # Make sure deluged is stopped.
     pid=`ps axf | grep deluged | grep -v grep | awk '{ print $1 }'`
@@ -257,6 +266,21 @@ function startDeluged {
 function stopDeluged {
   sudo pkill deluged
   sudo pkill deluge-web 
+}
+
+function uninstallDeluged {
+  stopDeluged
+  removePackage "deluged"
+  
+  if [ -d "$delugeConfigFolder" ]; then
+    printJob "Removing Deluge configuration files."
+    sudo rm -rf $delugeConfigFolder
+    printJobDone
+  fi 
+
+  removePackage "python-mako"
+  removePackage "deluge-web"
+  removePackage "deluge-console"
 }
 
 
@@ -632,13 +656,14 @@ function removePackage() {
   fi
 
   # Check if the package is installed, if so uninstall it.
-  if [[ `which $package` == "" ]]; then
+  if [[ `which $package` != "" ]]; then
 
     # Ensure script has root permission.
     requireRootPermission
 
     printJob "Uninstalling "$package
-    sudo apt-get --perge remove $package -y --forenableLoggingintJobDone
+    sudo apt-get --purge remove $package -y --force-yes
+    printJobDone
   fi
 }
 
@@ -967,7 +992,7 @@ if $helpFlag || ! $isHandled; then
 fi
 
 # Ensure ART is installed
-requireArt
+#requireArt
 
 # Start logging to file and log command used to run this script.
 logScriptRun
@@ -994,8 +1019,10 @@ fi
 
 # Start the vpn and vpn monitor.
 if $startFlag; then
+  uninstallDeluged  
   requireDeluge
-  startVpnMonitor
+  
+  #startVpnMonitor
 fi
 
 # Stop the vpn and vpn monitor.
