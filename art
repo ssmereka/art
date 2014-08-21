@@ -201,7 +201,7 @@ function requireDeluge {
     # Once the files have been generated, kill deluged process.
     sleepCounter=0
     while [ ! -f $delugeConfigFile ] && [ $sleepCounter -le 100 ]; do
-      sleep 0.1
+      sleep 1
       let sleepCounter=sleepCounter+1
     done
     sleep 2
