@@ -9,7 +9,7 @@ Turns a raspberry pi into a secure and anonymous torrent box with a single comma
 **Current Status:** In Development nearing Alpha
 
 # How?
-ART creates a Virtual Private Network (VPN) that encrypts all of your data.  Then ensures the VPN is always up and running, taking action if it fails.  A VPN requires a provider, aka something to connect to.  ART has been preconfigured to work with the popular and secure [providers](#vpnProviders).
+ART creates a Virtual Private Network (VPN) that encrypts all of your data.  Then ensures the VPN is always up and running, taking action if it fails.  A VPN requires a provider, aka something to connect to.  ART has been preconfigured to work with the popular and secure [providers](https://github.com/ssmereka/art/wiki/VPN-Providers).
 
 # Ok, Lets do it!
 
@@ -58,10 +58,6 @@ Rather than using a website you can also use the [Deluge Desktop Client](dev.del
 1. Add a host using the username/password you provided to ART during install.  ![Add Host](http://i.imgur.com/Mb2kfQV.jpg?1)
 2. Connect to the host using the connection manager.  ![Connection Manager](http://i.imgur.com/49h6OYM.jpg)
 
-<a name="vpnProviders" />
-# Compatible VPNs:
-ART is preconfigured to work with the following vpn service providers:
+# [Compatible VPNs](https://github.com/ssmereka/art/wiki/VPN-Providers)
 
-  * [Torguard](https://torguard.net/)
-
-
+# [FAQ](https://github.com/ssmereka/art/wiki/FAQ)
