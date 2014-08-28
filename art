@@ -996,6 +996,7 @@ listFlag=false
 tailFlag=false
 isHandled=false
 finishInstallFlag=false
+uninstallFlag=false
 
 scriptArguments="$@"
 
@@ -1028,6 +1029,11 @@ do
     -p | -print | [print])
       isHandled=true
       printFlag=true
+      ;;
+
+    -r | -remove | [remove])
+      isHandled=true
+      uninstallFlag=true
       ;;
 
     -s | -start | [start])
@@ -1063,7 +1069,7 @@ if $helpFlag || ! $isHandled; then
 fi
 
 # Ensure ART is installed
-#requireArt
+requireArt
 
 # Start logging to file and log command used to run this script.
 logScriptRun
@@ -1082,6 +1088,12 @@ if $finishInstallFlag; then
   end
 fi
 
+# Uninstall ART
+if $uninstallFlag; then
+  uninstallDeluged
+  end
+fi
+
 # Update the script and its dependancies.
 if $updateFlag; then
   #update
@@ -1090,10 +1102,7 @@ fi
 
 # Start the vpn and vpn monitor.
 if $startFlag; then
-  uninstallDeluged  
-  requireDeluge
-  
-  #startVpnMonitor
+  startVpnMonitor
 fi
 
 # Stop the vpn and vpn monitor.
