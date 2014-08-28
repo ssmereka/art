@@ -20,17 +20,6 @@
 # script... you can do so below.
 
 
-# Your IP address goes here.  Don't worry
-# the script will keep this updated for you,
-# but just to be safe.
-#
-# Recommendation... go to http://icanhazip.com
-# copy your IP address and paste it in here.
-# 
-
-ip=""
-
-
 # Private VPN username.  If you do not enter 
 # it here you will be prompted the first time
 # you start openvpn using this script.
@@ -172,6 +161,9 @@ if [[ "$SUDO_USER" != "" ]]; then
 else
   userHome=$HOME
 fi
+
+# The current IP address
+ip=""
 
 
 # ----------------------------------------- #
@@ -957,6 +949,8 @@ function startVpnMonitor {
   # Require openvpn to be installed and configured.
   requireOpenVpn
 
+  updateIpAddress
+
   printJob "Starting openvpn monitor"
   $vpnMonitorScript $openVpnConfigFile $openvpnLogFile $debug $ip &
   printJobDone
@@ -981,6 +975,22 @@ function stopVpnMonitor {
   fi
 }
 
+# Get the current IP Address
+function updateIpAddress {
+  printJob "Updating IP Address"
+
+  currentIpAddress=`curl -s icanhazip.com`
+  if [[ "currentIpAddress" != "" ]]; then
+    ip=$currentIpAddress
+  else 
+    echo "IP address could not be updated."
+  fi
+  
+  echo "IP Address: "$ip 
+
+  printJobDone
+}
+
 
 # ----------------------------------------- #
 # Script Logic
@@ -989,14 +999,15 @@ function stopVpnMonitor {
 # Possible script flags.
 helpFlag=false
 killFlag=false
-printFlag=false
+printLogFlag=false
 startFlag=false
 updateFlag=false
-listFlag=false
+listVpnsFlag=false
 tailFlag=false
 isHandled=false
 finishInstallFlag=false
 uninstallFlag=false
+ipFlag=false
 
 scriptArguments="$@"
 
@@ -1012,6 +1023,16 @@ do
       helpFlag=true
       ;;
 
+    -i | -install | [install])
+      isHandled=true
+      updateFlag=true
+      ;;
+    
+    -ip | [ip])
+      isHandled=true
+      ipFlag=true
+      ;;
+
     -k | -kill | [kill])
       isHandled=true
       killFlag=true
@@ -1020,20 +1041,10 @@ do
       # executed with a kill command
       startFlag=false
       ;;
- 
-    -l | -list | [list])
-      isHandled=true
-      listFlag=true
-      ;;
    
-    -p | -print | [print])
+    -l | -log | [log])
       isHandled=true
-      printFlag=true
-      ;;
-
-    -r | -remove | [remove])
-      isHandled=true
-      uninstallFlag=true
+      printLogFlag=true
       ;;
 
     -s | -start | [start])
@@ -1050,9 +1061,14 @@ do
       tailFlag=true
       ;;
 
-    -u | -update | [update])
+    -u | -uninstall | [uninstall])
       isHandled=true
-      updateFlag=true
+      uninstallFlag=true
+      ;;
+
+    -v | -vpn | [vpn])
+      isHandled=true
+      listVpnsFlag=true
       ;;
 
     -z)
@@ -1088,6 +1104,12 @@ if $finishInstallFlag; then
   end
 fi
 
+# Print the current IP address.
+if $ipFlag; then
+  updateIpAddress
+  print "IP Address: "$ip
+fi
+
 # Uninstall ART
 if $uninstallFlag; then
   uninstallDeluged
@@ -1111,12 +1133,12 @@ if $killFlag; then
 fi
 
 # List the available vpns.
-if $listFlag; then
+if $listVpnsFlag; then
   end
 fi
 
 # Print the log file.
-if $printFlag; then
+if $printLogFlag; then
   printLogs
 fi
 
