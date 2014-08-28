@@ -585,7 +585,7 @@ function requireArt {
     curDir=$(pwd)
     cd $scriptRootDirectory
     git fetch
-    git checkout v0.0.1
+    #git checkout v0.0.1
     chmod +x $vpnMonitorScript
     chmod +x $artScript
     chown -R $user:$user $scriptRootDirectory
