@@ -9,7 +9,7 @@ Turns a raspberry pi into a secure and anonymous torrent box with a single comma
 **Current Status:** In Development nearing Alpha
 
 # How?
-ART creates a Virtual Private Network (VPN) that encrypts all of your data.  Then ensures the VPN is always up and running, taking action if it fails.  A VPN requires a provider, aka something to connect to.  ART has been preconfigured to work with the popular and secure [providers](#vpnProviders).
+ART creates a Virtual Private Network (VPN) that encrypts all of your data.  Then ensures the VPN is always up and running, taking action if it fails.  A VPN requires a provider, aka something to connect to.  ART has been preconfigured to work with the popular and secure [providers](https://github.com/ssmereka/art/wiki/VPN-Providers).
 
 # Ok, Lets do it!
 
@@ -38,10 +38,11 @@ If you need to turn off the vpn and the vpn monitoring simply issue the kill com
 
 `sudo art -k`
 
-<a name="vpnProviders" />
-# Compatible VPNs:
-ART is preconfigured to work with the following vpn service providers:
+# Add Torrents
+A torrent client is required to actually download torrent files.  There are many to choose from, however ART will automatically install and configure the [Deluge](http://deluge-torrent.org/) client for you.  Once ART is installed you will be able to add torrent files to Deluge from another computer via a website, desktop client, and/or a chrome plugin.
 
-  * [Torguard](https://torguard.net/)
+  * [Web Client](https://github.com/ssmereka/art/wiki/Guides#webclient) - Easiest way to use Deluge.
+  * [Chrome Plugin](https://github.com/ssmereka/art/wiki/Guides#chromeplugin) - Send magnetic links and torrent files directly to Deluge.
+  * [Desktop Client](https://github.com/ssmereka/art/wiki/Guides#desktopclient) - Includes all the Deluge features and a little faster to use.
 
-
+# [FAQ](https://github.com/ssmereka/art/wiki/FAQ)
