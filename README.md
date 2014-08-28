@@ -9,7 +9,7 @@ Turns a raspberry pi into a secure and anonymous torrent box with a single comma
 **Current Status:** In Development nearing Alpha
 
 # How?
-ART creates a Virtual Private Network (VPN) that encrypts all of your data.  Then ensures the VPN is always up and running, taking action if it fails.  A VPN requires a provider, here is a list of [compatible providers](#vpnProviders).  ART has been preconfigured to work with the popular and secure providers.
+ART creates a Virtual Private Network (VPN) that encrypts all of your data.  Then ensures the VPN is always up and running, taking action if it fails.  A VPN requires a provider, aka something to connect to.  ART has been preconfigured to work with the popular and secure [providers](#vpnProviders).
 
 # Ok, Lets do it!
 
