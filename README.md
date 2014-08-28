@@ -41,8 +41,8 @@ If you need to turn off the vpn and the vpn monitoring simply issue the kill com
 # Add Torrents
 A torrent client is required to actually download torrent files.  There are many to choose from, however ART will automatically install and configure the [Deluge](http://deluge-torrent.org/) client for you.  Once ART is installed you will be able to add torrent files to Deluge from another computer via a website, desktop client, and/or a chrome plugin.
 
-  * [Web Client](https://github.com/ssmereka/art/wiki/Web-Client) - Easiest way to use Deluge.
-  * [Chrome Plugin](https://chrome.google.com/webstore/detail/delugesiphon/gabdloknkpdefdpkkibplcfnkngbidim?hl=en) - Send magnetic links and torrent files directly to Deluge.
-  * [Desktop Client](https://github.com/ssmereka/art/wiki/Desktop-Client) - Includes all the Deluge features and a little faster to use.
+  * [Web Client](https://github.com/ssmereka/art/wiki/Guides#webclient) - Easiest way to use Deluge.
+  * [Chrome Plugin](https://github.com/ssmereka/art/wiki/Guides#chromeplugin) - Send magnetic links and torrent files directly to Deluge.
+  * [Desktop Client](https://github.com/ssmereka/art/wiki/Guides#desktopclient) - Includes all the Deluge features and a little faster to use.
 
 # [FAQ](https://github.com/ssmereka/art/wiki/FAQ)
