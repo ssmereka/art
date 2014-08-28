@@ -157,6 +157,9 @@ isPmUpdated=false
 # Name of the current task being performed.
 currentJob=""
 
+# Name of the current sub task being performed.
+currentSubJob=""
+
 # User who invoked the script, even if they used sudo.
 user="$SUDO_USER"
 if [[ "$user" == "" ]]; then
@@ -174,10 +177,13 @@ fi
 # ----------------------------------------- #
 # Deluge
 # ----------------------------------------- #
+#delugeConfigFile="$userHome/.config/deluge/core.conf"
+#delugeConfigFolder="$userHome/.config/deluge"
+#delugeAuthFile="$userHome/.config/deluge/auth"
 
-delugeConfigFolder="$userHome/.config/deluge"
-delugeConfigFile="$userHome/.config/deluge/core.conf"
-delugeAuthFile="$userHome/.config/deluge/auth"
+delugeConfigFolder="$scriptRootDirectory/deluge"
+delugeConfigFile="$delugeConfigFolder/core.conf"
+delugeAuthFile="$delugeConfigFolder/auth"
 
 # Install and setup deluge if it is not already installed.
 function requireDeluge {
@@ -193,12 +199,55 @@ function requireDeluge {
     installPackage "deluge-web"
     installPackage "deluge-console"
 
-    printJob "Generating Deluge config files."
+    printJob "Setting up Deluge"
 
-    # Start deluged process to generate config files.
-    sudo -u $user nohup deluged &
-  
-    # Once the files have been generated, kill deluged process.
+    
+    printSubJob "Starting Deluge and generating config files"
+    
+    deluged --config="$delugeConfigFolder"
+    
+    # Wait for the deluge files to be generated.
+    sleepCounter=0
+    while [ ! -d $delugeConfigFolder ] && [ ! -f $delugeAuthFile ] && [ $sleepCounter -le 100 ]; do
+      sleep 0.1
+      let sleepCounter=sleepCounter+1
+    done
+    sleep 2
+
+    printSubJobDone
+    
+
+    # Stop deluge and wait for it to finish stopping.
+    stopDelugeAndWait
+    
+
+    printSubJob "Setting up Deluge authentication"
+
+    loadVpnCredentials
+    sudo echo $vpnUsername":"$vpnPassword":10" >> $delugeAuthFile
+    vpnUsername=""
+    vpnPassword=""
+
+    printSubJobDone
+    
+
+    # Setup Deluge configuration folder permissions.
+    sudo chown $user:$user -R $delugeConfigFolder
+
+
+    printSubJob "Starting Deluge"
+
+    deluged --config="$delugeConfigFolder"
+    sleep 2
+
+    printSubJobDone
+
+
+    printSubJob "Enabling remote connections"
+
+    deluge-console --config="$delugeConfigFolder" "config -s allow_remote True"
+
+    # Wait for deluge to generate the configuration file.
     sleepCounter=0
     while [ ! -f $delugeConfigFile ] && [ $sleepCounter -le 100 ]; do
       sleep 1
@@ -210,54 +259,39 @@ function requireDeluge {
       end "Deluge configuration files could not be generated."
     fi
 
-    pid=`ps axf | grep deluged | grep -v grep | awk '{ print $1 }'`
-    sudo pkill deluged
-    while [ -e /proc/$pid ]; do
-      sleep 0.1;
-    done
+    printSubJobDone
 
-    # Make sure deluged is stopped.
-    pid=`ps axf | grep deluged | grep -v grep | awk '{ print $1 }'`
-    if [[ "$pid" != "" ]]; then
-      end "Could not stop deluged process to complete deluged install process."
-    fi
 
-    # Setup authentication
-    loadVpnCredentials
-    echo $vpnUsername":"$vpnPassword":10" >> $delugeAuthFile
-    vpnUsername=""
-    vpnPassword=""
+    stopDelugeAndWait
 
     printJobDone
-
-    # Enable remote access
-    # TODO: Handle allow_remote: false cases.
-    if ! grep -q allow_remote "$delugeConfigFile"; then
-      printJob "Enabling deluged remote access"
-      cp $delugeConfigFile $delugeConfigFile".old"
-      sed -e 's/}{/}{\n  "allow_remote": true,/1' $delugeConfigFile > $delugeConfigFile".tmp"
-      cat $delugeConfigFile".tmp" > $delugeConfigFile
-      rm $delugeConfigFile".tmp"
-      printJobDone
-    fi
   fi
   
   startDeluged
 }
+
+function waitForPid {
+  if [ -n "$1" ]; then
+    while [[ ( -d /proc/$1 ) && ( -z `grep zombie /proc/$1/status` ) ]]; do 
+      sleep 0.1;
+    done
+  fi
+}
+
 
 # Start deluge deamon and web deamon if not already started.
 function startDeluged {
   delugedPid=`ps axf | grep deluged | grep -v grep | awk '{ print $1 }'`
   if [[ "$delugedPid" == "" ]]; then
     printJob "Starting deluge deamon"
-    deluged
+    deluged --config="$delugeConfigFolder"
     printJobDone
   fi
 
   webPid=`ps axf | grep deluge-web | grep -v grep | awk '{ print $1 }'`
   if [[ "$webPid" == "" ]]; then
     printJob "Starting deluge-web deamon"
-    nohup deluge-web &
+    sudo nohup deluge-web --config="$delugeConfigFolder" &
     printJobDone
   fi
 }
@@ -268,12 +302,27 @@ function stopDeluged {
   sudo pkill deluge-web 
 }
 
+# Kill Deluge and wait for it to close.
+function stopDelugeAndWait {
+  printSubJob "Stopping Deluge"
+
+  pid=`ps axf | grep deluge-console | grep -v grep | awk '{ print $1 }'`
+  sudo pkill deluge-console
+  waitForPid $pid
+
+  pid=`ps axf | grep deluged | grep -v grep | awk '{ print $1 }'`
+  sudo pkill deluged
+  waitForPid $pid
+ 
+  printSubJobDone
+}
+
 function uninstallDeluged {
   stopDeluged
   removePackage "deluged"
   
   if [ -d "$delugeConfigFolder" ]; then
-    printJob "Removing Deluge configuration files."
+    printJob "Removing Deluge config files"
     sudo rm -rf $delugeConfigFolder
     printJobDone
   fi 
@@ -764,6 +813,28 @@ function printJobDone {
   echo -e $job"...\t[ DONE ]"
   echo -e "----------------------------------------\n"
   echo -ne "\t[ DONE ]\n" 1>&3
+}
+
+# Print the start of a sub task to the log file.
+function printSubJob {
+  currentSubJob=$1
+  echo
+  echo -e $1"...\n"
+}
+
+# Print the end of a sub task to the log file.
+function printSubJobDone {
+  job=$1
+
+  # If the job name was not specified, use the current sub job.
+  if [[ "$job" == "" ]]; then
+    job=$currentSubJob
+    currentSubJob=""
+  fi
+
+  echo
+  echo -e $job"...\t[ DONE ]"
+  echo
 }
 
 # Print to the console only.
