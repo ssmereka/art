@@ -28,6 +28,11 @@ Once installed, art can be used from anywhere by issuing the *art* command.
 
 ![ART Usage](http://i.imgur.com/KCyLm6C.png?2) 
 
+## Start
+You can start the vpn and vpn monitor from anywhere using the start command.  If the vpn stops then the vpn monitor will ensure the vpn is restarted.
+
+`sudo art -s`
+
 ## Stop
 If you need to turn off the vpn and the vpn monitoring simply issue the kill command.
 
