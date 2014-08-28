@@ -9,7 +9,7 @@ Turns a raspberry pi into a secure and anonymous torrent box with a single comma
 **Current Status:** In Development nearing Alpha
 
 # How?
-ART creates a Virtual Private Network (VPN) that encrypts all of your data.  Then ensures the VPN is always up and running, taking action if it fails.  A VPN requires a provider, something to connect to such as [Torguard](https://torguard.net/).  ART has been preconfigured to work with the popular and secure providers.
+ART creates a Virtual Private Network (VPN) that encrypts all of your data.  Then ensures the VPN is always up and running, taking action if it fails.  A VPN requires a provider, here is a list of [compatible providers](#vpnProviders).  ART has been preconfigured to work with the popular and secure providers.
 
 # Ok, Lets do it!
 
@@ -33,6 +33,7 @@ If you need to turn off the vpn and the vpn monitoring simply issue the kill com
 
 `sudo art -k`
 
+<a name="vpnProviders" />
 # Compatible VPNs:
 ART is preconfigured to work with the following vpn service providers:
 
