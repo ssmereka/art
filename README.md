@@ -39,7 +39,7 @@ If you need to turn off the vpn and the vpn monitoring simply issue the kill com
 `sudo art -k`
 
 # Torrent Client
-A torrent client is required to actually download torrent files.  There are many to choose from, however ART will automatically install and configure the [Deluge](http://deluge-torrent.org/) client for you.  Once ART is installed you will be able to add torrent files to Deluge via a website and/or a chrome plugin.
+A torrent client is required to actually download torrent files.  There are many to choose from, however ART will automatically install and configure the [Deluge](http://deluge-torrent.org/) client for you.  Once ART is installed you will be able to add torrent files to Deluge via a website, desktop client, and/or a chrome plugin.
 
 ## Web Client
 The easiest way to use Deluge is the web client because you can add torrents from anywhere.
