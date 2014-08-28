@@ -42,12 +42,7 @@ If you need to turn off the vpn and the vpn monitoring simply issue the kill com
 A torrent client is required to actually download torrent files.  There are many to choose from, however ART will automatically install and configure the [Deluge](http://deluge-torrent.org/) client for you.  Once ART is installed you will be able to add torrent files to Deluge via a website, desktop client, and/or a chrome plugin.
 
 ## Web Client
-The easiest way to use Deluge is the web client because you can add torrents from anywhere.
-
-1. Enter your pi's IP address into any browser.  `http://192.168.1.102:58846`
-2. Login using your deluge password.  (The default password is:  deluge)
-3. Use the connection manager to add your pi as a host.
-4. Finally connect to your pi.
+The easiest way to use Deluge is with the web client.  Follow this [guide](https://github.com/ssmereka/art/wiki/Web-Client) to get started using it.
 
 ## Chrome Plugin
 Want to send all magnetic links and torrent files you click on to your pi?  Install the [Deluge Siphon](https://chrome.google.com/webstore/detail/delugesiphon/gabdloknkpdefdpkkibplcfnkngbidim?hl=en) plugin.
