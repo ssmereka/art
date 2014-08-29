@@ -39,7 +39,7 @@ If you need to turn off the vpn and the vpn monitoring simply issue the kill com
 `sudo art -k`
 
 # Add Torrents
-A torrent client is required to actually download torrent files.  There are many to choose from, however ART will automatically install and configure the [Deluge](http://deluge-torrent.org/) client for you.  Once ART is installed you will be able to add torrent files to Deluge from another computer via a website, desktop client, and/or a chrome plugin.
+[Deluge](http://deluge-torrent.org/) is a torrent client installed by ART to your raspberry pi.  You can add torrents to Deluge remotely from another computer using one of the three methods below.
 
   * [Web Client](https://github.com/ssmereka/art/wiki/Guides#webclient) - Easiest way to use Deluge.
   * [Chrome Plugin](https://github.com/ssmereka/art/wiki/Guides#chromeplugin) - Send magnetic links and torrent files directly to Deluge.
